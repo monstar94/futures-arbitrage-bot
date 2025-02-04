@@ -318,3 +318,26 @@ bot.on('message', async (ctx) => {
     await sequelize.close();
   }
 })();
+const { Telegraf } = require('telegraf');
+const { findSpotArbitrage } = require('./spotArbitrage');
+const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+
+bot.command('spot_arbitrage', async (ctx) => {
+    ctx.reply('🔎 Поиск арбитражных возможностей на спотовых рынках...');
+    const opportunities = await findSpotArbitrage();
+    
+    if (opportunities.length === 0) {
+        ctx.reply('🚫 Арбитражные возможности не найдены.');
+    } else {
+        let message = '💰 Найдены арбитражные возможности:\n\n';
+        opportunities.forEach(op => {
+            message += `🔹 ${op.symbol}:\n` +
+                `🔺 ${op.exchangeA}: ${op.priceA}$\n` +
+                `🔻 ${op.exchangeB}: ${op.priceB}$\n` +
+                `📊 Разница: ${op.percentDiff}\n\n`;
+        });
+        ctx.reply(message);
+    }
+});
+
+bot.launch();
