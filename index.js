@@ -42,7 +42,7 @@ async function parseFundingRatesData() {
         }
       });
     } catch (err) {
-      console.log(Ошибка обработки данных фандинга. ${err});
+      console.log(`Ошибка обработки данных фандинга. ${err}`);
     }
   }
 
@@ -68,7 +68,7 @@ function getArbitrageMessage(arbitrage, type) {
 
   let buyMessage = '';
   if (type === ARBITRAGE_TYPE.FUTURES) {
-    buyMessage = 📕Покупка/LONG [${buyOption.markPrice}] на ${
+    buyMessage = `📕Покупка/LONG [${buyOption.markPrice}] на ${
       EXCHANGE_NAME[buyOption.exchange]
     }\nТекущая: ${buyOption.fundingRate.toFixed(4)}% (${
       FUNDING_TYPE[buyOption.exchange]
@@ -76,14 +76,14 @@ function getArbitrageMessage(arbitrage, type) {
       2
     )}% ${buyOption.fundingRate > arbitrage.buyPriceDivergence ? '⬇️✅' : '⬆️❌'}\n🕐Следующая выплата: ${
       buyOption.nextFundingTime
-    } (${buyOption.fundingInterval}ч)\n${buyOption.futuresLink}\n\n;
+    } (${buyOption.fundingInterval}ч)\n${buyOption.futuresLink}\n\n`;
   } else if (type === ARBITRAGE_TYPE.SPOT) {
-    buyMessage = 📕Покупка/LONG [${buyOption.indexPrice}] на ${EXCHANGE_NAME[buyOption.exchange]}\n${
+    buyMessage = `📕Покупка/LONG [${buyOption.indexPrice}] на ${EXCHANGE_NAME[buyOption.exchange]}\n${
       buyOption.spotLink
-    }\n\n;
+    }\n\n`;
   }
 
-  const sellMessage = 📗Продажа/SHORT [${sellOption.markPrice}] на ${
+  const sellMessage = `📗Продажа/SHORT [${sellOption.markPrice}] на ${
     EXCHANGE_NAME[sellOption.exchange]
   }\nТекущая: ${sellOption.fundingRate.toFixed(4)}% (${
     FUNDING_TYPE[sellOption.exchange]
@@ -91,11 +91,11 @@ function getArbitrageMessage(arbitrage, type) {
     sellOption.fundingRate > sellPriceDivergence ? '⬇️❌' : '⬆️✅'
   }\n🕐Следующая выплата: ${sellOption.nextFundingTime} (${sellOption.fundingInterval}ч)\n${
     sellOption.futuresLink
-  }\n\n;
+  }\n\n`;
 
-  return Пара: ${symbol}\n\n${buyMessage}${sellMessage}💰Спред:\nТекущий: ${rateSpread.toFixed(
+  return `Пара: ${symbol}\n\n${buyMessage}${sellMessage}💰Спред:\nТекущий: ${rateSpread.toFixed(
     2
-  )}%\nПрогнозный: ${predictedFundingRateSpread.toFixed(2)}%\nКурсовой: ${priceSpread.toFixed(2)}%;
+  )}%\nПрогнозный: ${predictedFundingRateSpread.toFixed(2)}%\nКурсовой: ${priceSpread.toFixed(2)}%`;
 }
 
 function findArbitrages(symbolsData) {
@@ -158,7 +158,7 @@ function findArbitrages(symbolsData) {
 
         if (buyOption.exchange !== sellOption.exchange) {
           newFuturesArbitrages.push({
-            id: ${symbol}-${buyOption.exchange}-${sellOption.exchange},
+            id: `${symbol}-${buyOption.exchange}-${sellOption.exchange}`,
             symbol,
             buyOption,
             sellOption,
@@ -173,7 +173,7 @@ function findArbitrages(symbolsData) {
         }
 
         newSpotFuturesArbitrages.push({
-          id: ${symbol}-${buyOption.exchange}-${sellOption.exchange},
+          id: `${symbol}-${buyOption.exchange}-${sellOption.exchange}`,
           symbol,
           buyOption,
           sellOption,
@@ -248,7 +248,7 @@ bot.action(REGEX.SPREAD, (ctx) => {
         [
           {
             text: 'Обновить',
-            callback_data: refresh-${ctx.match[0]},
+            callback_data: `refresh-${ctx.match[0]}`,
           },
         ],
       ],
@@ -307,10 +307,10 @@ bot.on('message', async (ctx) => {
     }
 
     while (true) {
-      console.log(${getTimeString()}: Поиск спредов...);
+      console.log(`${getTimeString()}: Поиск спредов...`);
       const symbolsData = await parseFundingRatesData();
       findArbitrages(symbolsData);
-      console.log(${getTimeString()}: Поиск закончен. Следующая итерация через 10 секунд.);
+      console.log(`${getTimeString()}: Поиск закончен. Следующая итерация через 10 секунд.`);
       await sleep(10);
     }
   } catch (err) {
