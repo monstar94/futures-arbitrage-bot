@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-// Биржи, которые поддерживаются
+// Список бирж для спотового арбитража
 const exchanges = [
     { name: 'Binance', api: 'https://api.binance.com/api/v3/ticker/price' },
     { name: 'Bybit', api: 'https://api.bybit.com/v2/public/tickers' },
@@ -39,7 +39,7 @@ async function getSpotPrices() {
 async function findSpotArbitrage() {
     const prices = await getSpotPrices();
     let arbitrageOpportunities = [];
-    
+
     Object.keys(prices).forEach(symbol => {
         const exchangesForSymbol = Object.keys(prices[symbol]);
         if (exchangesForSymbol.length > 1) {
@@ -51,7 +51,7 @@ async function findSpotArbitrage() {
                     let priceB = prices[symbol][exchangeB];
                     let diff = Math.abs(priceA - priceB);
                     let percentDiff = (diff / Math.min(priceA, priceB)) * 100;
-                    
+
                     if (percentDiff > 1) {
                         arbitrageOpportunities.push({
                             symbol,
